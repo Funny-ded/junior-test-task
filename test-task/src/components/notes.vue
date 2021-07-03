@@ -1,7 +1,9 @@
 <template>
   <div>
+    <input type="text" v-model="search">
+    <button v-on:click="searchNote"></button>
     <ul>
-      <li class="note" v-for="(note, id) in notes">
+      <li class="note" v-for="(note, id) in filtered">
         <p class="body" v-show="!note.edit" v-on:click="editModeOn(id)">{{ note.note }}</p>
         <div class="edit-note" v-show="note.edit">
           <textarea v-on:keydown.enter="editNote(id)" ref="editedNote">{{ note.note}}</textarea>
@@ -26,6 +28,8 @@ export default {
   data() {
     return {
       editMode: false,
+      filtered: [],
+      search: '',
       notes: [],
       error: {
         update: '',
@@ -45,6 +49,7 @@ export default {
       }).then(response => {
         // save data to print it
         this.notes = response.data;
+        this.searchNote();
       });
     },
 
@@ -103,6 +108,12 @@ export default {
           this.fetchData();
           this.error.delete = '';
         }
+      });
+    },
+
+    searchNote: function(){
+      this.filtered = this.notes.filter(note => {
+        return note.note.match(this.search);
       });
     }
 
