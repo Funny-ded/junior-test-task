@@ -11,11 +11,15 @@
 
     // for each row in data table
     while($singleNote = mysqli_fetch_assoc($results)) {
-
-        // save data as variables
-        $note_id = $singleNote['id'];
         // XSS defence
         $note_body = htmlspecialchars($singleNote['note']);
+
+        if (strpos($note_body, $search) === false){
+          continue;
+        }
+        // save data as variables
+        $note_id = $singleNote['id'];
+
 
         // add data row to data array
         $notes[] = ['id' => $note_id, 'note' => $note_body, 'edit' => false];

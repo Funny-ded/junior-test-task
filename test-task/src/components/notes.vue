@@ -22,7 +22,7 @@
       </li>
     </ul>
 
-    <p id="not-exist" v-else-if="!notes.length">There is no notes containing string '{{ search }}'</p>
+    <p id="not-exist" v-else-if="!notes.length">There is no notes containing string '{{ error.search }}'</p>
 
   </div>
 </template>
@@ -38,7 +38,8 @@ export default {
       notes: [],
       error: {
         update: '',
-        delete: ''
+        delete: '',
+        search: ''
       }
     }
   },
@@ -56,6 +57,7 @@ export default {
       }).then(response => {
         // save data to print it
         this.notes = response.data;
+        this.error.search = search;
       });
     },
 
