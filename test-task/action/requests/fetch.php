@@ -1,9 +1,14 @@
 <?php
     // initialize data array
     $notes = [];
+    $search = $received_data->search;
 
     // create sql query
-    $sql = "SELECT * FROM notes ORDER BY id DESC";
+    if ($search){
+      $sql = "SELECT * FROM notes WHERE note LIKE '%$search%'";
+    } else {
+      $sql = "SELECT * FROM notes";
+    }
 
     // make the query to get results
     $results = mysqli_query($conn, $sql);
@@ -18,8 +23,6 @@
         // add data row to data array
         $notes[] = ['id' => $note_id, 'note' => $note_body, 'edit' => false];
     }
-    // reverse data array to make data array order by id
-    $notes = array_reverse($notes);
 
     // free results
     mysqli_free_result($results);

@@ -2,15 +2,15 @@
   <div>
     <div class="search">
       <input type="text" v-model="search" placeholder="Search note">
-      <button id="search" v-on:click="searchNote">
+      <button id="search" v-on:click="fetchData">
         <img src="https://image.flaticon.com/icons/png/512/58/58427.png" alt="search">
       </button>
     </div>
-    <ul v-if="filtered.length">
-      <li class="note" v-for="(note, id) in filtered">
+    <ul v-if="notes.length">
+      <li class="note" v-for="(note, id) in notes">
         <p class="body" v-show="!note.edit" v-on:click="editModeOn(id)">{{ note.note }}</p>
         <div class="edit-note" v-show="note.edit">
-          <textarea v-on:keydown.enter="editNote(id)" ref="editedNote">{{ note.note}}</textarea>
+          <textarea v-on:keydown.enter="editNote(id)" ref="editedNote">{{ note.note }}</textarea>
           <p class="error-message"  v-if="error.update">{{ error.update }}</p>
           <p class="error-message" v-if="error.delete">{{ error.delete }}</p>
         </div>
@@ -22,7 +22,7 @@
       </li>
     </ul>
 
-    <p id="not-exist" v-else-if="!filtered.length">There is no notes containing string '{{ search }}'</p>
+    <p id="not-exist" v-else-if="!notes.length">There is no notes containing string '{{ search }}'</p>
 
   </div>
 </template>
@@ -34,7 +34,6 @@ export default {
   data() {
     return {
       editMode: false,
-      filtered: [],
       search: '',
       notes: [],
       error: {
@@ -45,17 +44,18 @@ export default {
   },
   methods:{
     fetchData: function () {
+      var search = this.search
       // send request to PHP script to fetch data
       axios({
         method: "POST",
         url: "./action/action.php",
         data: {
           action: "fetchAll",
+          search: search
         },
       }).then(response => {
         // save data to print it
         this.notes = response.data;
-        this.searchNote();
       });
     },
 
@@ -116,12 +116,6 @@ export default {
         }
       });
     },
-
-    searchNote: function(){
-      this.filtered = this.notes.filter(note => {
-        return note.note.match(this.search);
-      });
-    }
 
   },
   created() {
