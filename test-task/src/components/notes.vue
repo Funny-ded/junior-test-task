@@ -1,8 +1,12 @@
 <template>
   <div>
-    <input type="text" v-model="search">
-    <button v-on:click="searchNote"></button>
-    <ul>
+    <div class="search">
+      <input type="text" v-model="search" placeholder="Search note">
+      <button id="search" v-on:click="searchNote">
+        <img src="https://image.flaticon.com/icons/png/512/58/58427.png" alt="search">
+      </button>
+    </div>
+      <ul v-if="filtered.length">
       <li class="note" v-for="(note, id) in filtered">
         <p class="body" v-show="!note.edit" v-on:click="editModeOn(id)">{{ note.note }}</p>
         <div class="edit-note" v-show="note.edit">
@@ -16,7 +20,9 @@
           </button>
         </div>
       </li>
-    </ul>
+      </ul>
+
+    <p id="not-exist" v-else-if="!filtered.length">There is no notes containing string '{{ search }}'</p>
 
   </div>
 </template>
@@ -172,5 +178,32 @@ textarea{
   resize: none;
   width: 100%;
   height: 100%;
+}
+input{
+  width: 300px;
+  height: 25px;
+  position: relative;
+  bottom: 7px;
+  left: 4px;
+}
+#search{
+  height: 31px;
+  width: 31px;
+  padding: 1px 2px;
+  border-radius: 0;
+  border: none;
+  cursor: pointer;
+}
+#search img{
+  height: 23px;
+  width: 23px;
+}
+.search{
+  height: 30px;
+}
+#not-exist{
+  color: red;
+  text-align: center;
+  border-radius: 5px;
 }
 </style>
