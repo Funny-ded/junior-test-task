@@ -1,10 +1,16 @@
 <template>
   <div>
-    <ul>
+    <div class="search">
+      <input type="text" v-model="search" placeholder="Search note">
+      <button id="search" v-on:click="fetchData">
+        <img src="https://image.flaticon.com/icons/png/512/58/58427.png" alt="search">
+      </button>
+    </div>
+    <ul v-if="notes.length">
       <li class="note" v-for="(note, id) in notes">
         <p class="body" v-show="!note.edit" v-on:click="editModeOn(id)">{{ note.note }}</p>
         <div class="edit-note" v-show="note.edit">
-          <textarea v-on:keydown.enter="editNote(id)" ref="editedNote">{{ note.note}}</textarea>
+          <textarea v-on:keydown.enter="editNote(id)" ref="editedNote">{{ note.note }}</textarea>
           <p class="error-message"  v-if="error.update">{{ error.update }}</p>
           <p class="error-message" v-if="error.delete">{{ error.delete }}</p>
         </div>
@@ -16,6 +22,8 @@
       </li>
     </ul>
 
+    <p id="not-exist" v-else-if="!notes.length">There is no notes containing string '{{ search }}'</p>
+
   </div>
 </template>
 
@@ -26,6 +34,7 @@ export default {
   data() {
     return {
       editMode: false,
+      search: '',
       notes: [],
       error: {
         update: '',
@@ -35,12 +44,14 @@ export default {
   },
   methods:{
     fetchData: function () {
+      var search = this.search
       // send request to PHP script to fetch data
       axios({
         method: "POST",
         url: "./action/action.php",
         data: {
           action: "fetchAll",
+          search: search
         },
       }).then(response => {
         // save data to print it
@@ -104,7 +115,7 @@ export default {
           this.error.delete = '';
         }
       });
-    }
+    },
 
   },
   created() {
@@ -161,5 +172,32 @@ textarea{
   resize: none;
   width: 100%;
   height: 100%;
+}
+input{
+  width: 300px;
+  height: 25px;
+  position: relative;
+  bottom: 7px;
+  left: 4px;
+}
+#search{
+  height: 31px;
+  width: 31px;
+  padding: 1px 2px;
+  border-radius: 0;
+  border: none;
+  cursor: pointer;
+}
+#search img{
+  height: 23px;
+  width: 23px;
+}
+.search{
+  height: 30px;
+}
+#not-exist{
+  color: red;
+  text-align: center;
+  border-radius: 5px;
 }
 </style>
