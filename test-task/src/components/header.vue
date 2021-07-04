@@ -30,13 +30,6 @@ header{
   margin: 0;
   border: 2px solid #51aff5;
 }
-/*div{*/
-/*  display: inline-block;*/
-/*  padding: 8px 0;*/
-/*  width: 20%;*/
-/*  position: relative;*/
-/*  cursor: default;*/
-/*}*/
 div{
   width: 80%;
   display: inline-block;
