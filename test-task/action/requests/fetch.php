@@ -1,28 +1,29 @@
 <?php
+
     // initialize data array
     $notes = [];
 
     // create sql query
-    $sql = "SELECT * FROM notes ORDER BY id DESC";
+    $sql = "SELECT * FROM notes";
 
-    // make the query to get results
-    $results = mysqli_query($conn, $sql);
+    // prepare for execution
+    $stmt = $mysqli->prepare($sql);
+
+    // execution
+    $stmt->execute();
+
+    // bind results into variables
+    $stmt->bind_result($id, $body);
+
 
     // for each row in data table
-    while($singleNote = mysqli_fetch_assoc($results)) {
+    while($stmt->fetch()) {
 
-        // save data as variables
-        $note_id = $singleNote['id'];
-        // XSS defence
-        $note_body = htmlspecialchars($singleNote['note']);
-        // add data row to data array
-        $notes[] = ['id' => $note_id, 'note' => $note_body, 'edit' => false];
+        $notes[] = ['id' => $id, 'body' => $body, 'edit' => false];
     }
-    // reverse data array to make data array order by id
-    $notes = array_reverse($notes);
 
-    // free results
-    mysqli_free_result($results);
+    // close the statement
+    $stmt->close();
 
     // send results back
     echo json_encode($notes);

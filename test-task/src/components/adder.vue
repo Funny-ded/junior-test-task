@@ -26,7 +26,7 @@ export default {
         url: "./action/action.php",
         data: {
           action: "addNote",
-          note: this.newNote
+          body: this.newNote
         }
       }).then(response => {
         // check if it is not success
