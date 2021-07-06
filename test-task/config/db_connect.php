@@ -1,7 +1,17 @@
 <?php
-    $conn = mysqli_connect('localhost', 'prokhor', 'test123', 'notes_page');
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-    if (!$conn){
-        echo "Connection error: ".mysqli_connect_error();
+    // connection parameters
+    $hostname = 'localhost';
+    $username = 'prokhor';
+    $password = 'test123';
+    $db = 'notes_page';
+
+    // try to connect
+    try {
+      $mysqli = new mysqli($hostname, $username, $password, $db);
+
+    } catch (mysqli_sql_exception $e) {
+      throw $e;
     }
 ?>

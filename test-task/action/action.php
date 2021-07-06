@@ -32,5 +32,6 @@
         echo json_encode([['id' => 0, 'note' => 'fail']]);
     }
 
-    mysqli_close($conn);
+    // close connection
+    $mysqli->close();
 ?>
