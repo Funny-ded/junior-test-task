@@ -119,7 +119,8 @@ export default {
 
     searchNote: function(){
       this.filtered = this.notes.filter(note => {
-        return note.body.match(this.search);
+        var filterExp = new RegExp(this.search, "i");
+        return note.body.match(filterExp);
       });
     }
 
