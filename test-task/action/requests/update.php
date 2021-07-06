@@ -1,7 +1,7 @@
 <?php
 
     // initialize constants
-    $updated_note = $received_data->note;
+    $updated_note = $received_data->body;
     $max_note_len = 255;
     $error = '';
     $id = $received_data->id;
@@ -31,24 +31,17 @@
 
     } else {
 
-        // i don`t know
-        $updated_note = mysqli_real_escape_string($conn, $updated_note);
+        // create sql query with placeholders
+        $sql = "UPDATE notes SET  note = ? WHERE notes.id = ?";
+        // prepare statement
+        $stmt = $mysqli->prepare($sql);
+        // bind parameters
+        $stmt->bind_param('si', $updated_note, $id);
+        // execute
+        $stmt->execute();
 
-        // create sql query
-        $sql = "UPDATE notes SET  note = '$updated_note' WHERE notes.id = $id";
-
-        // make the query
-        if(!mysqli_query($conn, $sql)){
-
-            // if not success then send an error message
-            echo json_encode('query error: '.mysqli_error($conn));
-
-        } else {
-
-            // success
-            echo json_encode('update success');
-
-        }
+        // send success message
+        echo json_encode('update success');
     }
 
 ?>

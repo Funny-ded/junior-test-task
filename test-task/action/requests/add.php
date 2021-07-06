@@ -2,7 +2,7 @@
     // initialize necessary variables
     $max_note_len = 255;
     $error = '';
-    $new_note = $received_data->note;
+    $new_note = $received_data->body;
 
     // check new note
     if (!$new_note){
@@ -28,25 +28,17 @@
         echo json_encode($error);
 
     } else{
-        // if it is not
 
+        // create a query with placeholder
+        $sql = "INSERT INTO notes(note) VALUES (?)";
+        // prepare for execution
+        $stmt = $mysqli->prepare($sql);
+        // bind parameters
+        $stmt->bind_param('s', $new_note);
+        // execute
+        $stmt->execute();
+        // send success message
+        echo json_encode('adding success');
 
-        // i don`t know why
-        $new_note = mysqli_real_escape_string($conn, $new_note);
-
-        // create a query
-        $sql = "INSERT INTO notes(note) VALUES ('$new_note')";
-
-        // make the query
-        if (!mysqli_query($conn, $sql)){
-
-            // send an error message if it is not success
-            echo json_encode('query error: '.mysqli_error($conn));
-
-        } else{
-
-            // send a success message if it is success
-            echo json_encode('adding success');
-        }
     }
 ?>

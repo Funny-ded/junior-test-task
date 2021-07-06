@@ -8,9 +8,9 @@
     </div>
     <ul v-if="notes.length">
       <li class="note" v-for="(note, id) in notes">
-        <p class="body" v-show="!note.edit" v-on:click="editModeOn(id)">{{ note.note }}</p>
+        <p class="body" v-show="!note.edit" v-on:click="editModeOn(id)">{{ note.body }}</p>
         <div class="edit-note" v-show="note.edit">
-          <textarea v-on:keydown.enter="editNote(id)" ref="editedNote">{{ note.note }}</textarea>
+          <textarea v-on:keydown.enter="editNote(id)" ref="editedNote">{{ note.body }}</textarea>
           <p class="error-message"  v-if="error.update">{{ error.update }}</p>
           <p class="error-message" v-if="error.delete">{{ error.delete }}</p>
         </div>
@@ -70,7 +70,7 @@ export default {
 
     editNote: function(noteId){
       // save note and id as variables
-      var note = this.$refs.editedNote[noteId].value;
+      var body = this.$refs.editedNote[noteId].value;
       var id = this.notes[noteId].id;
       // send request to PHP script to edit note
       axios({
@@ -79,7 +79,7 @@ export default {
         data: {
           action: 'updateData',
           id: id,
-          note: note
+          body: body
         },
       }).then(response => {
         // check if it is not success
