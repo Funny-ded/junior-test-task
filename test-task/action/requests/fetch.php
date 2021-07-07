@@ -1,39 +1,39 @@
 <?php
+    function fetch_all($search, $connection) {
+      try {
+        // initialize data array
+        $notes = [];
+        // create sql query
+        if ($search){
+          $sql = "SELECT * FROM notes WHERE note LIKE ?";
+          $search = '%'.$search.'%';
+          $stmt = $connection->prepare($sql);
 
-    // initialize data array
-    $notes = [];
-    $search = $received_data->search;
+          $stmt->bind_param('s', $search);
+        } else {
+          $sql = "SELECT * FROM notes";
+          // prepare for execution
+          $stmt = $connection->prepare($sql);
+        }
+        // execution
+        $stmt->execute();
+        // bind results into variables
+        $stmt->bind_result($id, $body);
 
-    // create sql query
-    if ($search) {
-      $sql = "SELECT * FROM notes WHERE note LIKE ? ";
-      $search = "%".$search."%";
-      $stmt = $mysqli->prepare($sql);
+        // for each row in data table
+        while ($stmt->fetch()) {
+          // update notes array
+          $notes[] = ['id' => $id, 'body' => $body, 'edit' => false];
+        }
 
-      $stmt->bind_param('s', $search);
-    } else {
-      $sql = "SELECT * FROM notes";
-      $stmt = $mysqli->prepare($sql);
+        // close the statement
+        $stmt->close();
+        // send results back
+        echo json_encode(['status' => 'success', 'send' => $notes]);
+
+      } catch (Exception $e){
+        // send an error message
+        echo json_encode(['status'=>'error', 'send'=>$e->getMessage()]);
+      }
     }
-    // prepare for execution
-
-
-    // execution
-    $stmt->execute();
-
-    // bind results into variables
-    $stmt->bind_result($id, $body);
-
-
-    // for each row in data table
-    while($stmt->fetch()) {
-
-        $notes[] = ['id' => $id, 'body' => $body, 'edit' => false];
-    }
-
-    // close the statement
-    $stmt->close();
-
-    // send results back
-    echo json_encode($notes);
 ?>

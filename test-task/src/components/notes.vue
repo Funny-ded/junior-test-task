@@ -6,7 +6,7 @@
         <img src="https://image.flaticon.com/icons/png/512/58/58427.png" alt="search">
       </button>
     </div>
-    <ul v-if="notes.length">
+    <ul v-if="!error.fetch">
       <li class="note" v-for="(note, id) in notes">
         <p class="body" v-show="!note.edit" v-on:click="editModeOn(id)">{{ note.body }}</p>
         <div class="edit-note" v-show="note.edit">
@@ -22,7 +22,7 @@
       </li>
     </ul>
 
-    <p id="not-exist" v-else-if="!notes.length">There is no notes containing string '{{ search }}'</p>
+    <p id="not-exist" v-else>{{ error.fetch }}</p>
 
   </div>
 </template>
@@ -38,12 +38,14 @@ export default {
       notes: [],
       error: {
         update: '',
-        delete: ''
+        delete: '',
+        fetch: ''
       }
     }
   },
   methods:{
     fetchData: function () {
+      this.error.fetch = '';
       var search = this.search
       // send request to PHP script to fetch data
       axios({
@@ -55,8 +57,18 @@ export default {
         },
       }).then(response => {
         // save data to print it
-        this.notes = response.data;
-      });
+        if (response.data.status === 'success') {
+          this.notes = response.data.send;
+        } else{
+          throw response.data.send;
+        }
+        if (!this.notes.length){
+          throw 'There is no notes containing string "' + this.search + '"';
+        }
+      })
+        .catch(error => {
+          this.error.fetch = error;
+        });
     },
 
     editModeOn: function(noteId){
@@ -67,6 +79,7 @@ export default {
     },
 
     editNote: function(noteId){
+      this.error.update = '';
       // save note and id as variables
       var body = this.$refs.editedNote[noteId].value;
       var id = this.notes[noteId].id;
@@ -81,19 +94,22 @@ export default {
         },
       }).then(response => {
         // check if it is not success
-        if (response.data !== 'update success'){
-          // create an error message
-          this.error.update = response.data;
-        } else {
+        if (response.data.status === 'success'){
           //  update data
           this.fetchData();
-          this.error.update = '';
           this.editMode = false;
+        } else {
+          // create an error message
+          throw response.data.send;
         }
-      });
+      })
+        .catch(error =>{
+          this.error.update = error;
+        });
     },
 
     deleteNote: function(noteId){
+      this.error.delete = '';
       // save id as a variable
       var id = this.notes[noteId].id;
       // send request to PHP script to delete note
@@ -106,17 +122,19 @@ export default {
         },
       }).then(response => {
         // check if it is not success
-        if (response.data !== 'delete success'){
-          // create an error message
-          this.error.delete = response.data;
-        } else {
+        if (response.data.status === 'success'){
           // update data
           this.fetchData();
-          this.error.delete = '';
-        }
-      });
-    },
 
+        } else {
+          // create an error message
+          throw response.data.send;
+        }
+      })
+        .catch(error =>{
+          this.error.delete = error;
+        });
+    },
   },
   created() {
     this.fetchData();
