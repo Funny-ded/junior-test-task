@@ -36,5 +36,6 @@ body{
 }
 .error-message{
   color: red;
+  text-align: center;
 }
 </style>
