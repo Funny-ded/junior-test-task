@@ -6,7 +6,7 @@
         <img src="https://image.flaticon.com/icons/png/512/58/58427.png" alt="search">
       </button>
     </div>
-    <ul v-if="notes.length">
+    <ul v-if="!error.fetch">
       <li class="note" v-for="(note, id) in notes">
         <p class="body" v-show="!note.edit" v-on:click="editModeOn(id)">{{ note.body }}</p>
         <div class="edit-note" v-show="note.edit">
@@ -22,7 +22,7 @@
       </li>
     </ul>
 
-    <p id="not-exist" v-else-if="!notes.length">There is no notes containing string '{{ error.search }}'</p>
+    <p id="not-exist" v-else>{{ error.fetch }}</p>
 
   </div>
 </template>
@@ -39,7 +39,7 @@ export default {
       error: {
         update: '',
         delete: '',
-        search: ''
+        fetch: ''
       }
     }
   },
@@ -56,9 +56,19 @@ export default {
         },
       }).then(response => {
         // save data to print it
-        this.notes = response.data;
-        this.error.search = search;
-      });
+        if (response.data.status === 'success') {
+          this.notes = response.data.send;
+          this.error.fetch = '';
+        } else{
+          throw response.data.send;
+        }
+        if (!this.notes.length){
+          throw 'There is no notes containing string "' + this.search + '"';
+        }
+      })
+        .catch(error => {
+          this.error.fetch = error;
+        });
     },
 
     editModeOn: function(noteId){
@@ -83,16 +93,19 @@ export default {
         },
       }).then(response => {
         // check if it is not success
-        if (response.data !== 'update success'){
-          // create an error message
-          this.error.update = response.data;
-        } else {
+        if (response.data.status === 'success'){
           //  update data
           this.fetchData();
           this.error.update = '';
           this.editMode = false;
+        } else {
+          // create an error message
+          throw response.data.send;
         }
-      });
+      })
+        .catch(error =>{
+          this.error.update = error;
+        });
     },
 
     deleteNote: function(noteId){
@@ -108,17 +121,20 @@ export default {
         },
       }).then(response => {
         // check if it is not success
-        if (response.data !== 'delete success'){
-          // create an error message
-          this.error.delete = response.data;
-        } else {
+        if (response.data.status === 'success'){
           // update data
           this.fetchData();
           this.error.delete = '';
-        }
-      });
-    },
 
+        } else {
+          // create an error message
+          throw response.data.send;
+        }
+      })
+        .catch(error =>{
+          this.error.delete = error;
+        });
+    },
   },
   created() {
     this.fetchData();
