@@ -30,16 +30,20 @@ export default {
         }
       }).then(response => {
         // check if it is not success
-        if (response.data !== 'adding success'){
-          // create an error message
-          this.error.add = response.data;
-        } else {
+        if (response.data.status === 'success'){
           // update data
           this.$parent.$children[1].fetchData();
           this.error.add = '';
           this.newNote = "";
+
+        } else {
+          // create an error message
+          throw response.data.send;
         }
-      });
+      })
+        .catch(error => {
+          this.error.add = error;
+        });
     },
   }
 }

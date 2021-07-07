@@ -44,8 +44,15 @@ export default {
         },
       }).then(response => {
         // save data to print it
-        this.notes = response.data;
-      });
+        if (response.data.status === 'success') {
+          this.notes = response.data.send;
+        } else{
+          throw response.data.send;
+        }
+      })
+        .catch(error => {
+          this.error.fetch = error;
+        });
     },
 
     editModeOn: function(noteId){
@@ -70,16 +77,19 @@ export default {
         },
       }).then(response => {
         // check if it is not success
-        if (response.data !== 'update success'){
-          // create an error message
-          this.error.update = response.data;
-        } else {
+        if (response.data.status === 'success'){
           //  update data
           this.fetchData();
           this.error.update = '';
           this.editMode = false;
+        } else {
+          // create an error message
+          throw response.data.send;
         }
-      });
+      })
+        .catch(error =>{
+          this.error.update = error;
+        });
     },
 
     deleteNote: function(noteId){
@@ -95,18 +105,22 @@ export default {
         },
       }).then(response => {
         // check if it is not success
-        if (response.data !== 'delete success'){
-          // create an error message
-          this.error.delete = response.data;
-        } else {
+        if (response.data.status === 'success'){
           // update data
           this.fetchData();
           this.error.delete = '';
-        }
-      });
-    }
 
+        } else {
+          // create an error message
+          throw response.data.send;
+        }
+      })
+        .catch(error =>{
+          this.error.delete = error;
+        });
+    }
   },
+
   created() {
     this.fetchData();
   }
