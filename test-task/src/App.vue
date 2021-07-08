@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="page">
     <notes-header></notes-header>
     <notes></notes>
     <adder></adder>
@@ -36,5 +36,6 @@ body{
 }
 .error-message{
   color: red;
+  text-align: center;
 }
 </style>
