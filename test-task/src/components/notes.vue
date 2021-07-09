@@ -1,16 +1,16 @@
 <template>
-  <div>
-    <ul>
-      <li class="note" v-for="(note, id) in notes">
+  <div id="content">
+    <ul id="notes-list" v-if="!error.fetch">
+      <li class="single-note" v-for="(note, id) in notes">
         <p class="body" v-show="!note.edit" v-on:click="editModeOn(id)">{{ note.body }}</p>
         <div class="edit-note" v-show="note.edit">
-          <textarea v-on:keydown.enter="editNote(id)" ref="editedNote">{{ note.body }}</textarea>
+          <textarea v-on:keydown.enter.prevent="editNote(id)" ref="editedNote">{{ note.body }}</textarea>
           <p class="error-message"  v-if="error.update">{{ error.update }}</p>
           <p class="error-message" v-if="error.delete">{{ error.delete }}</p>
         </div>
-        <div class="delete">
-          <button class="delete" v-on:click="deleteNote(id)">
-            <img class="delete" src="https://image.flaticon.com/icons/png/512/67/67345.png" alt="delete-button">
+        <div id="delete">
+          <button v-on:click="deleteNote(id)">
+            <img src="https://image.flaticon.com/icons/png/512/67/67345.png" alt="delete-button">
           </button>
         </div>
       </li>
@@ -93,6 +93,7 @@ export default {
     },
 
     deleteNote: function(noteId){
+      this.editMode = false;
       // save id as a variable
       var id = this.notes[noteId].id;
       // send request to PHP script to delete note
@@ -128,27 +129,28 @@ export default {
 </script>
 
 <style scoped>
-li.note {
+#notes-list{
+  overflow: hidden;
+  list-style: none;
+  padding: 0 0 0 30px;
+  margin: 20px 0 0 7%;
+}
+.single-note{
+  float: left;
+  width: 50%;
   border-radius: 5px;
   background: #ddd;
-  display: inline-block;
-  text-shadow: none;
   margin: 4px;
   max-width: 600px;
-  width: 40%;
   padding: 10px 7px;
   text-align: left;
-  position: relative;
-}
-div ul{
-  text-align: center;
 }
 .body{
   width: 90%;
   display: inline-block;
   word-wrap: break-word;
 }
-.delete{
+#delete, #delete button{
   display: inline-block;
   position: absolute;
   margin: 0;
@@ -156,24 +158,79 @@ div ul{
   height: 30px;
   width: 30px;
 }
-img.delete{
+#delete button img{
   height: 25px;
   width: 25px;
   position: relative;
 }
-button.delete{
+#delete button{
   left: 12px;
 }
-
 .edit-note{
   display: inline-block;
   width: 90%;
   position: relative;
-  height: 80px;
+  height: 120px;
 }
 textarea{
   resize: none;
   width: 100%;
   height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+@media screen and (max-width: 1400px){
+  .single-note{
+    width: 45%;
+  }
+}
+
+@media screen and (max-width: 1000px){
+  .single-note{
+    width: 90%;
+    max-width: 1000px;
+  }
+}
+
+@media screen and (max-width: 640px){
+  .single-note{
+    width: 100%;
+    border-radius: 0;
+  }
+  #notes-list{
+    margin-left: 0;
+    padding-left: 0;
+  }
+  .body{
+    width: 85%;
+  }
+  .edit-note{
+    width: 85%;
+  }
+}
+@media screen and (max-width: 420px){
+  .body{
+    width: 80%;
+  }
+  .edit-note{
+    width: 80%;
+  }
+}
+@media screen and (max-width: 360px){
+  .body{
+    font-size: 0.8em;
+    width: 75%;
+  }
+  .edit-note{
+    width: 75%;
+  }
+}
+@media screen and (max-width: 260px){
+  .body{
+    width: 65%;
+  }
+  .edit-note{
+    width: 65%;
+  }
 }
 </style>
