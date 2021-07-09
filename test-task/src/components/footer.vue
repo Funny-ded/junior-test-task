@@ -17,8 +17,14 @@ footer{
   text-align: center;
   padding: 10px;
 }
-footer p{
+p{
   font-weight: bold;
   color: #fff;
+}
+@media screen and (max-width: 260px){
+  p{
+    font-weight: normal;
+    font-size: 0.9em;
+  }
 }
 </style>

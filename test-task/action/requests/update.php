@@ -8,9 +8,6 @@
         } else if (strlen($updated_note) > $max_note_len) {
           // if updated note is too large
           throw new  Exception('Your note is too large. Number of symbols must no more than ' . $max_note_len);
-        } else if (!preg_match('/^([a-zA-Z\s]+)(,\s*[a-zA-Z\s]*)*$/', $updated_note)) {
-          // if updated note contains forbidden symbols
-          throw new Exception('The new note is incorrect. Please, use only characters and commas');
         }
 
         // create sql query with placeholders
