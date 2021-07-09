@@ -1,26 +1,26 @@
 <template>
-  <div>
-    <div class="search">
+  <div id="content">
+    <div id="search">
       <input type="text" v-model="search" placeholder="Search note">
-      <button id="search" v-on:click="searchNote">
+      <button v-on:click="fetchData">
         <img src="https://image.flaticon.com/icons/png/512/58/58427.png" alt="search">
       </button>
     </div>
-      <ul v-if="!error.fetch && !error.search">
-      <li class="note" v-for="(note, id) in filtered">
+    <ul id="notes-list" v-if="!error.fetch && !error.search">
+      <li class="single-note" v-for="(note, id) in filtered">
         <p class="body" v-show="!note.edit" v-on:click="editModeOn(id)">{{ note.body }}</p>
         <div class="edit-note" v-show="note.edit">
-          <textarea v-on:keydown.enter="editNote(id)" ref="editedNote">{{ note.body }}</textarea>
+          <textarea v-on:keydown.enter.prevent="editNote(id)" ref="editedNote">{{ note.body }}</textarea>
           <p class="error-message"  v-if="error.update">{{ error.update }}</p>
           <p class="error-message" v-if="error.delete">{{ error.delete }}</p>
         </div>
-        <div class="delete">
-          <button class="delete" v-on:click="deleteNote(id)">
-            <img class="delete" src="https://image.flaticon.com/icons/png/512/67/67345.png" alt="delete-button">
+        <div id="delete">
+          <button v-on:click="deleteNote(id)">
+            <img src="https://image.flaticon.com/icons/png/512/67/67345.png" alt="delete-button">
           </button>
         </div>
       </li>
-      </ul>
+    </ul>
 
     <p class="error-message" v-else-if="error.fetch">{{ error.fetch }}</p>
     <p class="error-message" v-else-if="error.search">{{ error.search }}</p>
@@ -137,6 +137,7 @@ export default {
 
     searchNote: function(){
       try {
+        this.editMode = false;
         this.error.search = '';
         this.filtered = this.notes.filter(note => {
           var filterExp = new RegExp(this.search, "i");
@@ -158,27 +159,28 @@ export default {
 </script>
 
 <style scoped>
-li.note {
+#notes-list{
+  overflow: hidden;
+  list-style: none;
+  padding: 0 0 0 30px;
+  margin: 20px 0 0 7%;
+}
+.single-note{
+  float: left;
+  width: 50%;
   border-radius: 5px;
   background: #ddd;
-  display: inline-block;
-  text-shadow: none;
   margin: 4px;
   max-width: 600px;
-  width: 40%;
   padding: 10px 7px;
   text-align: left;
-  position: relative;
-}
-div ul{
-  text-align: center;
 }
 .body{
   width: 90%;
   display: inline-block;
   word-wrap: break-word;
 }
-.delete{
+#delete, #delete button{
   display: inline-block;
   position: absolute;
   margin: 0;
@@ -186,34 +188,35 @@ div ul{
   height: 30px;
   width: 30px;
 }
-img.delete{
+#delete button img{
   height: 25px;
   width: 25px;
   position: relative;
 }
-button.delete{
+#delete button{
   left: 12px;
 }
-
 .edit-note{
   display: inline-block;
   width: 90%;
   position: relative;
-  height: 80px;
+  height: 120px;
 }
 textarea{
   resize: none;
   width: 100%;
   height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 input{
-  width: 300px;
+  max-width: 300px;
+  width: 65%;
   height: 25px;
   position: relative;
   bottom: 7px;
   left: 4px;
 }
-#search{
+#search button{
   height: 31px;
   width: 31px;
   padding: 1px 2px;
@@ -221,16 +224,63 @@ input{
   border: none;
   cursor: pointer;
 }
-#search img{
+#search button img{
   height: 23px;
   width: 23px;
 }
-.search{
-  height: 30px;
+
+@media screen and (max-width: 1400px){
+  .single-note{
+    width: 45%;
+  }
 }
-#not-exist{
-  color: red;
-  text-align: center;
-  border-radius: 5px;
+
+@media screen and (max-width: 1000px){
+  .single-note{
+    width: 90%;
+    max-width: 1000px;
+  }
+}
+
+@media screen and (max-width: 640px){
+  .single-note{
+    width: 100%;
+    border-radius: 0;
+  }
+  #notes-list{
+    margin-left: 0;
+    padding-left: 0;
+  }
+  .body{
+    width: 85%;
+  }
+  .edit-note{
+    width: 85%;
+  }
+}
+@media screen and (max-width: 420px){
+  .body{
+    width: 80%;
+  }
+  .edit-note{
+    width: 80%;
+  }
+}
+@media screen and (max-width: 360px){
+  .body{
+    font-size: 0.8em;
+    width: 75%;
+  }
+  .edit-note{
+    width: 75%;
+  }
+}
+@media screen and (max-width: 260px){
+  .body{
+    width: 65%;
+  }
+  .edit-note{
+    width: 65%;
+  }
 }
 </style>
