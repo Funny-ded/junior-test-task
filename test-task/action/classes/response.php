@@ -66,7 +66,7 @@
       {
         try {
           // check updated note
-          if (!$updated_note) {
+          if (!str_replace([" ", "\n", "\r", "\r\n"], '', $updated_note)) {
             // if updated note is empty
             throw new Exception('New note is empty. If you want to delete note, please, press delete button');
           } else if (strlen($updated_note) > $max_note_len) {
