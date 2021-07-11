@@ -4,13 +4,17 @@
       <li class="single-note" v-for="(note, id) in notes">
         <p class="body" v-show="!note.edit" v-on:click="editModeOn(id)">{{ note.body }}</p>
         <div class="edit-note" v-show="note.edit">
-          <textarea v-on:keydown.enter.prevent="editNote(id)" ref="editedNote">{{ note.body }}</textarea>
+          <textarea v-on:keydown.enter="editNote($event, id)" ref="editedNote">{{ note.body }}</textarea>
+
           <p class="error-message"  v-if="error.update">{{ error.update }}</p>
           <p class="error-message" v-if="error.delete">{{ error.delete }}</p>
         </div>
-        <div id="delete">
-          <button v-on:click="deleteNote(id)">
+        <div id="buttons">
+          <button id="delete" v-on:click="deleteNote(id)">
             <img src="https://image.flaticon.com/icons/png/512/67/67345.png" alt="delete-button">
+          </button>
+          <button id="no-changes" v-show="note.edit" v-on:click="editMode = false; note.edit = false;">
+            <img src="https://www.svgrepo.com/show/54336/return-button.svg" alt="exit from edit mode without any changes">
           </button>
         </div>
       </li>
@@ -39,9 +43,9 @@ export default {
       axios({
         method: "POST",
         url: "./action/action.php",
-        data: {
-          action: "fetchAll",
-        },
+        data:{
+          action: 'fetchAll'
+        }
       }).then(response => {
         // save data to print it
         if (response.data.status === 'success') {
@@ -62,34 +66,37 @@ export default {
       }
     },
 
-    editNote: function(noteId){
-      // save note and id as variables
-      var body = this.$refs.editedNote[noteId].value;
-      var id = this.notes[noteId].id;
-      // send request to PHP script to edit note
-      axios({
-        method: 'POST',
-        url: "./action/action.php",
-        data: {
-          action: 'updateData',
-          id: id,
-          body: body
-        },
-      }).then(response => {
-        // check if it is not success
-        if (response.data.status === 'success'){
-          //  update data
-          this.fetchData();
-          this.error.update = '';
-          this.editMode = false;
-        } else {
-          // create an error message
-          throw response.data.send;
-        }
-      })
-        .catch(error =>{
-          this.error.update = error;
-        });
+    editNote: function(evt, noteId){
+      if (!evt.shiftKey) {
+        evt.preventDefault();
+        // save note and id as variables
+        var body = this.$refs.editedNote[noteId].value;
+        var id = this.notes[noteId].id;
+        // send request to PHP script to edit note
+        axios({
+          method: 'POST',
+          url: "./action/action.php",
+          data: {
+            action: 'updateData',
+            id: id,
+            body: body
+          },
+        }).then(response => {
+          // check if it is not success
+          if (response.data.status === 'success') {
+            //  update data
+            this.fetchData();
+            this.error.update = '';
+            this.editMode = false;
+          } else {
+            // create an error message
+            throw response.data.send;
+          }
+        })
+          .catch(error => {
+            this.error.update = error;
+          });
+      }
     },
 
     deleteNote: function(noteId){
@@ -124,6 +131,9 @@ export default {
 
   created() {
     this.fetchData();
+  },
+  mounted(){
+    this.$root.$on('fetchAll', this.fetchData);
   }
 }
 </script>
@@ -149,8 +159,9 @@ export default {
   width: 90%;
   display: inline-block;
   word-wrap: break-word;
+  white-space: pre-line;
 }
-#delete, #delete button{
+#buttons, #buttons button{
   display: inline-block;
   position: absolute;
   margin: 0;
@@ -158,13 +169,16 @@ export default {
   height: 30px;
   width: 30px;
 }
-#delete button img{
+#buttons button img{
   height: 25px;
   width: 25px;
   position: relative;
 }
-#delete button{
+#buttons button{
   left: 12px;
+}
+#buttons #no-changes{
+  top: 30px;
 }
 .edit-note{
   display: inline-block;
