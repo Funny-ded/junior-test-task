@@ -5,7 +5,6 @@
         <p class="body" v-show="!note.edit" v-on:click="editModeOn(id)">{{ note.body }}</p>
         <div class="edit-note" v-show="note.edit">
           <textarea v-on:keydown.enter="editNote($event, id)" v-model="editedNote">{{ note.body }}</textarea>
-
           <p class="error-message"  v-if="error.update">{{ error.update }}</p>
           <p class="error-message" v-if="error.delete">{{ error.delete }}</p>
         </div>
